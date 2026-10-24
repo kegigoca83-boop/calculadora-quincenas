@@ -16,7 +16,8 @@ export function calcular(d: QuincenaData): Resumen {
   const ingresos = (Number(d.sq) || 0) + totalTA
   const subtotalPK = suma(d.pk)
   const subtotalPC = suma(d.pc)
-  const gq = subtotalPK + subtotalPC
+  // Los pagos compartidos solo muestran su total: no cuentan en GQ ni se restan
+  const gq = subtotalPK
   return { ingresos, totalTA, subtotalPK, subtotalPC, gq, restante: ingresos - gq }
 }
 

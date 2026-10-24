@@ -18,8 +18,11 @@ export function Resumen({ r }: { r: R }) {
       <div className="mt-3 border-t border-slate-100 pt-2 text-sm dark:border-slate-800">
         {fila('Ingresos', r.ingresos, 'font-medium')}
         {fila('Pagos Kenny (PK)', r.subtotalPK)}
-        {fila('Pagos compartidos (PC)', r.subtotalPC)}
         {fila('Total gastos (GQ)', r.gq, 'font-medium')}
+      </div>
+      <div className="mt-2 rounded-xl bg-slate-50 px-3 py-2 text-sm dark:bg-slate-800/50">
+        {fila('Pagos compartidos (PC)', r.subtotalPC, 'font-medium')}
+        <p className="text-xs text-slate-400">Total aparte: no se resta del Total restante.</p>
       </div>
     </Card>
   )

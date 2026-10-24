@@ -12,7 +12,7 @@ const d = {
 
 describe('cálculos', () => {
   it('suma ingresos, gastos y restante', () => {
-    expect(calcular(d)).toEqual({ ingresos: 2_300_000, totalTA: 300_000, subtotalPK: 80_000, subtotalPC: 2_400_000, gq: 2_480_000, restante: -180_000 })
+    expect(calcular(d)).toEqual({ ingresos: 2_300_000, totalTA: 300_000, subtotalPK: 80_000, subtotalPC: 2_400_000, gq: 80_000, restante: 2_220_000 })
   })
   it('copia sueldo y solo gastos fijos, sin fecha ni evento', () => {
     const c = copiarFijos(d)
@@ -29,7 +29,7 @@ describe('cálculos', () => {
   it('importa un respaldo y rechaza basura', () => {
     const r = importarJSON(JSON.stringify({ version: 1, quincenas: { '2026-10-Q2': d, malo: {} }, config: {} }))
     expect(Object.keys(r.quincenas)).toEqual(['2026-10-Q2'])
-    expect(calcular(r.quincenas['2026-10-Q2']).restante).toBe(-180_000)
+    expect(calcular(r.quincenas['2026-10-Q2']).restante).toBe(2_220_000)
     expect(() => importarJSON('hola')).toThrow('JSON válido')
     expect(() => importarJSON('{}')).toThrow('quincenas')
   })
