@@ -24,6 +24,8 @@ export interface AppData {
   quincenas: Record<string, QuincenaData>
   config: {
     diasPagoCreados?: boolean
+    /** Quincenal (por defecto) o mensual */
+    modo?: 'quincenal' | 'mensual'
   }
 }
 

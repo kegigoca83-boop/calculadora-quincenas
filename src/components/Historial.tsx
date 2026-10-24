@@ -1,7 +1,7 @@
 import type { AppData } from '../types'
 import { calcular, tieneDatos } from '../lib/calc'
 import type { Quincena } from '../lib/quincena'
-import { clave, desdeClave, rangoTexto, titulo } from '../lib/quincena'
+import { clave, desdeClave, modoDe, rangoTexto, titulo } from '../lib/quincena'
 import { colorRestante, formatCOP } from '../lib/format'
 import { Card } from './Card'
 
@@ -10,11 +10,13 @@ export function Historial({ datos, actual, onIr }: { datos: AppData; actual: Qui
     .filter(([, d]) => tieneDatos(d))
     .sort(([a], [b]) => b.localeCompare(a))
     .map(([k, d]) => ({ q: desdeClave(k)!, k, restante: calcular(d).restante }))
+    // Solo los periodos del modo que se está usando (quincenas o meses)
+    .filter((f) => modoDe(f.q) === modoDe(actual))
 
   return (
     <Card titulo="🕑 Historial">
       {filas.length === 0 ? (
-        <p className="text-sm text-slate-400">Aún no hay quincenas guardadas.</p>
+        <p className="text-sm text-slate-400">Aún no hay {modoDe(actual) === 'mensual' ? 'meses guardados' : 'quincenas guardadas'}.</p>
       ) : (
         <ul className="divide-y divide-slate-100 dark:divide-slate-800">
           {filas.map((f) => (

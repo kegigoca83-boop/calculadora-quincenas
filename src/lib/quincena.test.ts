@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { anterior, clave, quincenaActual, rangoTexto, siguiente, titulo } from './quincena'
+import { anterior, clave, desdeClave, quincenaActual, rangoTexto, siguiente, titulo } from './quincena'
 
 describe('quincenas', () => {
   it('usa la hora de Bogotá (UTC-5)', () => {
@@ -18,5 +18,17 @@ describe('quincenas', () => {
     expect(siguiente({ year: 2026, month: 12, q: 2 })).toEqual({ year: 2027, month: 1, q: 1 })
     expect(anterior({ year: 2026, month: 1, q: 1 })).toEqual({ year: 2025, month: 12, q: 2 })
     expect(clave({ year: 2026, month: 3, q: 1 })).toBe('2026-03-Q1')
+  })
+})
+
+describe('modo mensual', () => {
+  it('usa el mes completo', () => {
+    const m = quincenaActual(new Date('2026-10-24T15:00:00Z'), 'mensual')
+    expect(m).toEqual({ year: 2026, month: 10, q: 0 })
+    expect(`${titulo(m)} (${rangoTexto(m)})`).toBe('Octubre 2026 (1–31 oct)')
+    expect(clave(m)).toBe('2026-10-M')
+    expect(desdeClave('2026-10-M')).toEqual(m)
+    expect(siguiente({ year: 2026, month: 12, q: 0 })).toEqual({ year: 2027, month: 1, q: 0 })
+    expect(anterior({ year: 2026, month: 1, q: 0 })).toEqual({ year: 2025, month: 12, q: 0 })
   })
 })

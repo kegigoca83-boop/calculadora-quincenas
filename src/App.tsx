@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { AppData, Item, ListaGasto, QuincenaData } from './types'
 import { calcular, copiarFijos, tieneDatos, vacia } from './lib/calc'
-import { anterior, clave, iguales, quincenaActual, siguiente } from './lib/quincena'
-import type { Quincena } from './lib/quincena'
+import { anterior, clave, iguales, modoDe, nombrePeriodo, quincenaActual, siguiente } from './lib/quincena'
+import type { Modo, Quincena } from './lib/quincena'
 import { cargar, guardar } from './lib/storage'
 import { colorRestante, formatCOP } from './lib/format'
 import {
@@ -20,7 +20,7 @@ import { Respaldo } from './components/Respaldo'
 
 export default function App() {
   const [datos, setDatos] = useState<AppData>(cargar)
-  const [q, setQ] = useState<Quincena>(() => quincenaActual())
+  const [q, setQ] = useState<Quincena>(() => quincenaActual(new Date(), datos.config.modo))
   const [pestana, setPestana] = useState<ListaGasto>('pk')
   const [gcalOk, setGcalOk] = useState(estaConectado)
   const [recarga, setRecarga] = useState(0)
@@ -40,7 +40,15 @@ export default function App() {
   const actual = datos.quincenas[k] ?? vacia()
   const previa = datos.quincenas[clave(anterior(q))]
   const r = calcular(actual)
-  const esActual = iguales(q, quincenaActual())
+  const modo = modoDe(q)
+  const mensual = modo === 'mensual'
+  const esActual = iguales(q, quincenaActual(new Date(), modo))
+
+  const cambiarModo = (m: Modo) => {
+    if (m === modo) return
+    setDatos((d) => ({ ...d, config: { ...d.config, modo: m } }))
+    setQ(quincenaActual(new Date(), m))
+  }
 
   const actualizar = (fn: (d: QuincenaData) => QuincenaData) =>
     setDatos((prev) => ({ ...prev, quincenas: { ...prev.quincenas, [k]: fn(prev.quincenas[k] ?? vacia()) } }))
@@ -84,7 +92,7 @@ export default function App() {
   const diasPago = async () => {
     if (datos.config.diasPagoCreados && !confirm('Ya los creaste antes. ¿Crearlos otra vez? (quedarían repetidos)')) return
     try {
-      await crearDiasDePago()
+      await crearDiasDePago(mensual)
       setDatos((d) => ({ ...d, config: { ...d.config, diasPagoCreados: true } }))
       setRecarga((n) => n + 1)
       setAviso('Días de pago creados: se repiten cada mes ✓')
@@ -110,13 +118,15 @@ export default function App() {
         esActual={esActual}
         onAnterior={() => setQ(anterior(q))}
         onSiguiente={() => setQ(siguiente(q))}
-        onHoy={() => setQ(quincenaActual())}
+        onHoy={() => setQ(quincenaActual(new Date(), modo))}
+        onModo={cambiarModo}
       />
 
       <main className="mx-auto -mt-2 max-w-md space-y-4 px-4">
         {mostrarCopia && previa && (
           <CopiarBanner
             anterior={previa}
+            periodo={nombrePeriodo(modo)}
             onCopiar={() => actualizar(() => copiarFijos(previa))}
             onDescartar={() => actualizar((d) => ({ ...d, copiaDescartada: true }))}
           />
@@ -125,8 +135,8 @@ export default function App() {
         <Resumen r={r} />
 
         <Card titulo="💵 Ingresos">
-          <label className="mb-1 block text-sm text-slate-500 dark:text-slate-400">Sueldo quincenal (SQ)</label>
-          <MoneyInput grande value={actual.sq} ariaLabel="Sueldo quincenal" onChange={(v) => actualizar((d) => ({ ...d, sq: v }))} />
+          <label className="mb-1 block text-sm text-slate-500 dark:text-slate-400">{mensual ? 'Sueldo mensual' : 'Sueldo quincenal (SQ)'}</label>
+          <MoneyInput grande value={actual.sq} ariaLabel={mensual ? 'Sueldo mensual' : 'Sueldo quincenal'} onChange={(v) => actualizar((d) => ({ ...d, sq: v }))} />
           <h3 className="mb-2 mt-4 text-sm font-semibold">Trabajos adicionales (TA)</h3>
           <ItemList
             items={actual.ta}
@@ -140,7 +150,7 @@ export default function App() {
           </div>
         </Card>
 
-        <Card titulo="🧾 Gastos quincenales (GQ)">
+        <Card titulo={mensual ? '🧾 Gastos del mes' : '🧾 Gastos quincenales (GQ)'}>
           <div className="mb-3 flex gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
             {tab('pk', 'Pagos propios', r.subtotalPK)}
             {tab('pc', 'Pagos compartidos', r.subtotalPC)}

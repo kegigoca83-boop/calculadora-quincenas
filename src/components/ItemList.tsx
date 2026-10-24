@@ -67,7 +67,7 @@ export function ItemList({ items, onChange, esPago, onRecordatorio, etiquetaTota
                   <button
                     onClick={() => editar(i.id, { fijo: !i.fijo })}
                     className={`rounded-full px-3 py-1.5 ${i.fijo ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200' : 'bg-slate-200/70 text-slate-500 dark:bg-slate-700 dark:text-slate-300'}`}
-                    title="Los gastos fijos se pueden copiar a la siguiente quincena"
+                    title="Los gastos fijos se pueden copiar al siguiente periodo"
                   >
                     📌 {i.fijo ? 'Fijo' : 'Marcar fijo'}
                   </button>

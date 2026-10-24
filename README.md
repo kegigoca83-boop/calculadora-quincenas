@@ -9,6 +9,7 @@ Funciona en el celular, se puede instalar como app (PWA) y guarda todo **solo en
 - **Total restante** = Ingresos − GQ (verde si es positivo, rojo si es negativo)
 
 Quincena 1 = días 1 al 15. Quincena 2 = día 16 al último día del mes.
+Arriba hay un selector **Quincenal / Mensual**: en modo mensual todo se calcula por mes completo (cada modo guarda sus propios datos).
 
 ---
 

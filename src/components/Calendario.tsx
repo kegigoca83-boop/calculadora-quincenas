@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { Quincena } from '../lib/quincena'
-import { rangoISO } from '../lib/quincena'
+import { modoDe, nombrePeriodo, rangoISO } from '../lib/quincena'
 import type { Evento } from '../lib/gcal'
 import { SesionVencida, gcalConfigurado, listarEventos } from '../lib/gcal'
 import { fechaCorta } from '../lib/format'
@@ -21,6 +21,8 @@ export function Calendario({ q, conectado, recarga, diasPagoCreados, onConectar,
   const [eventos, setEventos] = useState<Evento[] | null>(null)
   const [error, setError] = useState<string | null>(null)
   const { inicio, fin } = rangoISO(q)
+  const periodo = nombrePeriodo(modoDe(q))
+  const delPeriodo = periodo === 'mes' ? 'del mes' : 'de la quincena'
 
   useEffect(() => {
     if (!conectado) return
@@ -54,7 +56,7 @@ export function Calendario({ q, conectado, recarga, diasPagoCreados, onConectar,
     return (
       <Card titulo="📅 Google Calendar">
         <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">
-          Conecta tu calendario para ver tus eventos de la quincena y crear recordatorios de pago. Es opcional.
+          Conecta tu calendario para ver tus eventos {delPeriodo} y crear recordatorios de pago. Es opcional.
         </p>
         <button onClick={onConectar} className="w-full rounded-xl bg-sky-600 px-4 py-3 font-semibold text-white active:bg-sky-700">
           Conectar Google Calendar
@@ -65,12 +67,12 @@ export function Calendario({ q, conectado, recarga, diasPagoCreados, onConectar,
 
   return (
     <Card
-      titulo="📅 Eventos de la quincena"
+      titulo={`📅 Eventos ${delPeriodo}`}
       extra={<button onClick={onDesconectar} className="text-sm text-slate-500 underline">Desconectar</button>}
     >
       {error && <p className="text-sm text-red-600">{error}</p>}
       {!eventos && !error && <p className="text-sm text-slate-400">Cargando eventos…</p>}
-      {eventos?.length === 0 && <p className="text-sm text-slate-400">No tienes eventos en esta quincena.</p>}
+      {eventos?.length === 0 && <p className="text-sm text-slate-400">No tienes eventos en {periodo === 'mes' ? 'este mes' : 'esta quincena'}.</p>}
       {eventos && eventos.length > 0 && (
         <ul className="divide-y divide-slate-100 dark:divide-slate-800">
           {eventos.map((e) => (
@@ -90,7 +92,11 @@ export function Calendario({ q, conectado, recarga, diasPagoCreados, onConectar,
         onClick={onCrearDiasPago}
         className="mt-3 w-full rounded-xl bg-sky-50 px-4 py-2.5 text-sm font-semibold text-sky-800 ring-1 ring-sky-200 active:bg-sky-100 dark:bg-sky-900/30 dark:text-sky-200 dark:ring-sky-800"
       >
-        {diasPagoCreados ? '✓ Días de pago creados (crear de nuevo)' : '💰 Crear días de pago del sueldo (15 y último día)'}
+        {diasPagoCreados
+          ? '✓ Días de pago creados (crear de nuevo)'
+          : periodo === 'mes'
+            ? '💰 Crear día de pago del sueldo (último día del mes)'
+            : '💰 Crear días de pago del sueldo (15 y último día)'}
       </button>
     </Card>
   )

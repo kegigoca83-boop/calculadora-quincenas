@@ -22,7 +22,7 @@ export function Respaldo({ datos, onImportar, avisar }: { datos: AppData; onImpo
     try {
       const nuevos = importarJSON(await f.text())
       const n = Object.keys(nuevos.quincenas).length
-      if (!confirm(`El respaldo tiene ${n} quincena(s). Esto reemplaza los datos actuales de este dispositivo. ¿Continuar?`)) return
+      if (!confirm(`El respaldo tiene ${n} periodo(s) guardado(s). Esto reemplaza los datos actuales de este dispositivo. ¿Continuar?`)) return
       onImportar(nuevos)
       avisar('Datos importados ✓')
     } catch (e) {

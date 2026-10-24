@@ -188,7 +188,7 @@ export async function crearRecordatorioPago(item: Item): Promise<string> {
     method: 'POST',
     body: JSON.stringify({
       summary: `Pago: ${item.descripcion || 'sin descripción'} – $${formatMiles(item.valor)}`,
-      description: 'Creado desde la Calculadora de Quincenas',
+      description: 'Creado desde la Calculadora de Finanzas',
       start: { dateTime: `${item.fecha}T09:00:00`, timeZone: ZONA },
       end: { dateTime: `${item.fecha}T09:30:00`, timeZone: ZONA },
       reminders: { useDefault: false, overrides: [{ method: 'popup', minutes: 1440 }, { method: 'popup', minutes: 60 }] },
@@ -197,20 +197,24 @@ export async function crearRecordatorioPago(item: Item): Promise<string> {
   return r.id
 }
 
-/** Crea dos eventos de todo el día que se repiten cada mes: el 15 y el último día del mes */
-export async function crearDiasDePago(): Promise<void> {
+/** Crea eventos de todo el día que se repiten cada mes: el 15 (solo en modo quincenal) y el último día del mes */
+export async function crearDiasDePago(mensual = false): Promise<void> {
   const hoy = hoyBogota()
   const sigMes = hoy.month === 12 ? { year: hoy.year + 1, month: 1 } : { year: hoy.year, month: hoy.month + 1 }
   const primer15 = hoy.day <= 15 ? fechaISO(hoy.year, hoy.month, 15) : fechaISO(sigMes.year, sigMes.month, 15)
   const primerUltimo = fechaISO(hoy.year, hoy.month, diasDelMes(hoy.year, hoy.month))
   const evento = (fecha: string, regla: string, titulo: string) => ({
     summary: titulo,
-    description: 'Creado desde la Calculadora de Quincenas',
+    description: 'Creado desde la Calculadora de Finanzas',
     start: { date: fecha },
     end: { date: diaSiguiente(fecha) },
     recurrence: [regla],
     reminders: { useDefault: true },
   })
+  if (mensual) {
+    await api(API, { method: 'POST', body: JSON.stringify(evento(primerUltimo, 'RRULE:FREQ=MONTHLY;BYMONTHDAY=-1', '💰 Día de pago')) })
+    return
+  }
   await api(API, { method: 'POST', body: JSON.stringify(evento(primer15, 'RRULE:FREQ=MONTHLY;BYMONTHDAY=15', '💰 Día de pago (quincena 1)')) })
   await api(API, { method: 'POST', body: JSON.stringify(evento(primerUltimo, 'RRULE:FREQ=MONTHLY;BYMONTHDAY=-1', '💰 Día de pago (quincena 2)')) })
 }

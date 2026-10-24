@@ -75,5 +75,8 @@ function normalizar(crudo: unknown): AppData {
       ...(q.copiaDescartada ? { copiaDescartada: true } : {}),
     }
   }
-  return { version: 1, quincenas, config: { diasPagoCreados: !!obj.config?.diasPagoCreados } }
+  return { version: 1, quincenas, config: {
+    diasPagoCreados: !!obj.config?.diasPagoCreados,
+    modo: obj.config?.modo === 'mensual' ? 'mensual' : 'quincenal',
+  } }
 }
