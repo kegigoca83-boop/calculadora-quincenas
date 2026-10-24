@@ -142,7 +142,7 @@ export default function App() {
 
         <Card titulo="🧾 Gastos quincenales (GQ)">
           <div className="mb-3 flex gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
-            {tab('pk', 'Pagos Kenny', r.subtotalPK)}
+            {tab('pk', 'Pagos propios', r.subtotalPK)}
             {tab('pc', 'Pagos compartidos', r.subtotalPC)}
           </div>
           <ItemList
@@ -151,7 +151,7 @@ export default function App() {
             items={actual[pestana]}
             onChange={(items) => actualizar((d) => ({ ...d, [pestana]: items }))}
             onRecordatorio={gcalConfigurado ? (item) => recordatorio(pestana, item) : undefined}
-            etiquetaTotal={pestana === 'pk' ? 'Subtotal PK' : 'Subtotal PC'}
+            etiquetaTotal={pestana === 'pk' ? 'Subtotal PP' : 'Subtotal PC'}
             placeholder={pestana === 'pk' ? 'Ej: Celular' : 'Ej: Arriendo'}
           />
         </Card>

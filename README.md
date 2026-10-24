@@ -4,7 +4,7 @@ App para llevar tus finanzas personales por quincenas, en pesos colombianos (COP
 Funciona en el celular, se puede instalar como app (PWA) y guarda todo **solo en tu dispositivo**.
 
 - **Ingresos** = Sueldo quincenal (SQ) + Trabajos adicionales (TA)
-- **Gastos (GQ)** = Pagos Kenny (PK)
+- **Gastos (GQ)** = Pagos propios (PP)
 - **Pagos compartidos (PC)**: solo muestra su propio total, no se resta
 - **Total restante** = Ingresos − GQ (verde si es positivo, rojo si es negativo)
 
